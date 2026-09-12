@@ -14,6 +14,10 @@ Unos momentos después, los archivos estarán disponibles en la carpeta `assets/
 
 [![Carita simple](assets/carita.svg)](assets/carita.svg)
 
+### serpiente-espacial
+
+[![Carita simple](assets/carita.svg)](assets/serpiente-espacial.svg)
+
 ## Uso
 
 ### Opción #1: Usar misworkflows como GitHub Action
