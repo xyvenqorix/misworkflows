@@ -31,8 +31,6 @@ Unos momentos después, los archivos estarán disponibles en la carpeta `assets/
 
 ### Carita simple
 
-Archivo: `.github/workflows/carita.yml`
-
 ```yaml
 name: Carita simple
 
