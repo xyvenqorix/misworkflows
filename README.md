@@ -16,7 +16,7 @@ Unos momentos después, los archivos estarán disponibles en la carpeta `assets/
 
 ### serpiente-espacial
 
-[![Carita simple](assets/carita.svg)](assets/serpiente-espacial.svg)
+[![Carita simple](assets/serpiente-espacial.svg)](assets/serpiente-espacial.svg)
 
 ## Uso
 
