@@ -1,91 +1,132 @@
-🎨 misworkflows — SVG automáticos
+# 🎨 misworkflows
 
-Repositorio de workflows de GitHub Actions para generar y guardar archivos SVG animados automáticamente.
+misworkflows genera imágenes SVG animadas con GitHub Actions y las guarda automáticamente en tu repositorio.
 
-✨ ¿Qué puedes obtener?
+Unos momentos después, los archivos estarán disponibles en la carpeta `assets/`.
 
-Este proyecto incluye dos diseños SVG:
+## Ejemplos
 
-- Carita simple: una carita animada con ojos, brillos, cachetes y boca.
-- XYVENQORIX artwork: un diseño pixel art con el nombre XYVENQORIX, partículas y efectos de brillo.
+[![Carita simple](assets/carita.svg)](assets/carita.svg)
 
-Los archivos SVG se generan mediante GitHub Actions y se guardan automáticamente en la carpeta "assets/" del repositorio.
+[![XYVENQORIX artwork](assets/xyvenqorix.svg)](assets/xyvenqorix.svg)
 
-📁 Archivos generados
+## Uso
 
-misworkflows/
-├── .github/
-│   └── workflows/
-│       ├── carita.yml
-│       └── xyvenqorix.yml
-└── assets/
-    ├── carita.svg
-    └── xyvenqorix.svg
+### Opción #1: Usar misworkflows como GitHub Action
 
-⚙️ ¿Cómo obtener los SVG?
+1. Asegúrate de que en Settings > Actions > General > Workflow permissions esté seleccionada la opción Read and write permissions.
 
-1. Entra al repositorio: "misworkflows" (https://github.com/xyvenqorix/misworkflows)
-2. Abre la pestaña Actions.
-3. Selecciona el workflow que quieras ejecutar.
-4. Pulsa Run workflow y confirma la ejecución.
-5. Cuando termine correctamente, entra en la carpeta "assets/".
-6. Abre el archivo ".svg" generado para visualizarlo, copiar su código o utilizarlo en tu página web.
+2. Copia tus workflows en la carpeta `.github/workflows/` de tu repositorio.
 
-También puedes descargar el SVG desde GitHub y utilizarlo en tus proyectos.
+3. GitHub Actions generará automáticamente los siguientes archivos:
 
-🔐 Configurar permisos de GitHub Actions
+   - `assets/carita.svg`
+   - `assets/xyvenqorix.svg`
 
-Para que los workflows puedan crear o actualizar archivos SVG dentro del repositorio, debes configurar los permisos de escritura.
+4. Abre los SVG para ver las animaciones, copiar su código o utilizarlos en tus proyectos.
 
-Paso 1: Entrar en Settings
+5. ¡Diviértete! :)
 
-En tu repositorio, abre:
+## Workflows
 
-Settings → Actions → General
+### Carita simple
 
-Paso 2: Configurar Workflow permissions
+Archivo: `.github/workflows/carita.yml`
 
-Busca la sección Workflow permissions y selecciona:
+```yaml
+name: Carita simple
 
-«Read and write permissions»
-
-Esto permite que el workflow pueda leer y modificar archivos del repositorio mediante "GITHUB_TOKEN".
-
-Si aparece la opción:
-
-«Allow GitHub Actions to create and approve pull requests»
-
-No es necesaria para estos workflows, porque los SVG se guardan directamente en la rama "main" mediante la API de GitHub.
-
-Pulsa Save si aparece el botón.
-
-Paso 3: Permiso en el workflow
-
-Los archivos YAML deben incluir:
+on:
+  push:
+    branches: [main]
+    paths-ignore:
+      - assets/carita.svg
+  workflow_dispatch:
 
 permissions:
   contents: write
 
-Este permiso autoriza al workflow a crear o actualizar los archivos SVG en la carpeta "assets/".
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/github-script@v7
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          script: |
+            const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="420" height="190" viewBox="0 0 420 190">
+              <!-- Sin fondo -->
 
-🚀 Ejecución automática
+              <!-- Ojos -->
+              <g fill="#286b5a">
+                <ellipse cx="150" cy="72" rx="20" ry="25">
+                  <animate attributeName="ry" values="25;25;3;25" dur="5s" repeatCount="indefinite"/>
+                </ellipse>
+                <ellipse cx="270" cy="72" rx="20" ry="25">
+                  <animate attributeName="ry" values="25;25;3;25" dur="5s" repeatCount="indefinite"/>
+                </ellipse>
+              </g>
 
-Los workflows se ejecutan cuando haces un "push" a la rama "main", excepto cuando el cambio solamente afecta al SVG que genera el propio workflow.
+              <!-- Brillos de ojos -->
+              <g fill="#d8fff0">
+                <circle cx="143" cy="64" r="5">
+                  <animate attributeName="cx" values="143;149;143;137;143" dur="6s" repeatCount="indefinite"/>
+                </circle>
+                <circle cx="263" cy="64" r="5">
+                  <animate attributeName="cx" values="263;269;263;257;263" dur="6s" repeatCount="indefinite"/>
+                </circle>
+              </g>
 
-También puedes ejecutarlos manualmente con "workflow_dispatch".
+              <!-- Cachetes -->
+              <g fill="#63a993">
+                <ellipse cx="105" cy="123" rx="19" ry="9" opacity=".55">
+                  <animate attributeName="opacity" values=".28;.72;.28" dur="3s" repeatCount="indefinite"/>
+                </ellipse>
+                <ellipse cx="315" cy="123" rx="19" ry="9" opacity=".55">
+                  <animate attributeName="opacity" values=".28;.72;.28" dur="3s" repeatCount="indefinite"/>
+                </ellipse>
+              </g>
 
-Esto evita que la actualización del SVG provoque una ejecución repetitiva del mismo workflow.
+              <!-- Boca -->
+              <path
+                d="M180 128 Q210 153 240 128"
+                fill="none"
+                stroke="#286b5a"
+                stroke-width="8"
+                stroke-linecap="round">
+                <animate
+                  attributeName="d"
+                  values="
+                    M180 128 Q210 153 240 128;
+                    M185 135 Q210 121 235 135;
+                    M190 130 Q210 140 230 130;
+                    M180 128 Q210 153 240 128"
+                  dur="9s"
+                  repeatCount="indefinite"/>
+              </path>
+            </svg>`;
 
-🖥️ Visualizar y copiar el SVG
+            const path = "assets/carita.svg";
+            let sha;
 
-Puedes abrir los archivos SVG directamente en el navegador para ver sus animaciones.
+            try {
+              const old = await github.rest.repos.getContent({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                path,
+                ref: "main"
+              });
+              sha = old.data.sha;
+            } catch (error) {
+              if (error.status !== 404) throw error;
+            }
 
-Para copiar el código completo, abre el archivo en GitHub y utiliza la opción de copiar el contenido del archivo. También puedes incorporar un botón tipo pantallita en una página web para mostrar el SVG y copiar su código.
-
-📌 Repositorio
-
-"https://github.com/xyvenqorix/misworkflows" (https://github.com/xyvenqorix/misworkflows)
-
----
-
-Creado por XYVENQORIX.
+            await github.rest.repos.createOrUpdateFileContents({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              path,
+              branch: "main",
+              message: "Actualizar carita",
+              content: Buffer.from(svg).toString("base64"),
+              ...(sha ? { sha } : {})
+            });
