@@ -6,8 +6,6 @@ Unos momentos después, los archivos estarán disponibles en la carpeta `assets/
 
 ## Ejemplos
 
-[![Carita simple](assets/carita.svg)](assets/carita.svg)
-
 [![XYVENQORIX artwork](assets/xyvenqorix.svg)](assets/xyvenqorix.svg)
 
 ## Uso
@@ -18,118 +16,19 @@ Unos momentos después, los archivos estarán disponibles en la carpeta `assets/
 
 2. Copia tus workflows en la carpeta `.github/workflows/` de tu repositorio.
 
-3. GitHub Actions generará automáticamente los siguientes archivos:
+3. GitHub Actions generará automáticamente el siguiente archivo:
 
-   - `assets/carita.svg`
    - `assets/xyvenqorix.svg`
 
-4. Abre los SVG para ver las animaciones, copiar su código o utilizarlos en tus proyectos.
+4. Abre el SVG para ver la animación, copiar su código o utilizarlo en tus proyectos.
 
 5. ¡Diviértete! :)
 
-## Workflows
+## Workflow
 
-### Carita simple
+### XYVENQORIX artwork
 
-name: Carita simple
-
-on:
-  push:
-    branches: [main]
-    paths-ignore:
-      - assets/carita.svg
-  workflow_dispatch:
-
-permissions:
-  contents: write
-
-jobs:
-  build:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/github-script@v7
-        with:
-          github-token: ${{ secrets.GITHUB_TOKEN }}
-          script: |
-            const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="420" height="190" viewBox="0 0 420 190">
-              <!-- Sin fondo -->
-
-              <!-- Ojos -->
-              <g fill="#286b5a">
-                <ellipse cx="150" cy="72" rx="20" ry="25">
-                  <animate attributeName="ry" values="25;25;3;25" dur="5s" repeatCount="indefinite"/>
-                </ellipse>
-                <ellipse cx="270" cy="72" rx="20" ry="25">
-                  <animate attributeName="ry" values="25;25;3;25" dur="5s" repeatCount="indefinite"/>
-                </ellipse>
-              </g>
-
-              <!-- Brillos de ojos -->
-              <g fill="#d8fff0">
-                <circle cx="143" cy="64" r="5">
-                  <animate attributeName="cx" values="143;149;143;137;143" dur="6s" repeatCount="indefinite"/>
-                </circle>
-                <circle cx="263" cy="64" r="5">
-                  <animate attributeName="cx" values="263;269;263;257;263" dur="6s" repeatCount="indefinite"/>
-                </circle>
-              </g>
-
-              <!-- Cachetes -->
-              <g fill="#63a993">
-                <ellipse cx="105" cy="123" rx="19" ry="9" opacity=".55">
-                  <animate attributeName="opacity" values=".28;.72;.28" dur="3s" repeatCount="indefinite"/>
-                </ellipse>
-                <ellipse cx="315" cy="123" rx="19" ry="9" opacity=".55">
-                  <animate attributeName="opacity" values=".28;.72;.28" dur="3s" repeatCount="indefinite"/>
-                </ellipse>
-              </g>
-
-              <!-- Boca -->
-              <path
-                d="M180 128 Q210 153 240 128"
-                fill="none"
-                stroke="#286b5a"
-                stroke-width="8"
-                stroke-linecap="round">
-                <animate
-                  attributeName="d"
-                  values="
-                    M180 128 Q210 153 240 128;
-                    M185 135 Q210 121 235 135;
-                    M190 130 Q210 140 230 130;
-                    M180 128 Q210 153 240 128"
-                  dur="9s"
-                  repeatCount="indefinite"/>
-              </path>
-            </svg>`;
-
-            const path = "assets/carita.svg";
-            let sha;
-
-            try {
-              const old = await github.rest.repos.getContent({
-                owner: context.repo.owner,
-                repo: context.repo.repo,
-                path,
-                ref: "main"
-              });
-              sha = old.data.sha;
-            } catch (error) {
-              if (error.status !== 404) throw error;
-            }
-
-            await github.rest.repos.createOrUpdateFileContents({
-              owner: context.repo.owner,
-              repo: context.repo.repo,
-              path,
-              branch: "main",
-              message: "Actualizar carita",
-              content: Buffer.from(svg).toString("base64"),
-              ...(sha ? { sha } : {})
-            });
-
-### Crea Tu Nombre Animado artwork
-
+```yaml
 name: XYVENQORIX artwork
 
 on:
@@ -242,11 +141,3 @@ jobs:
               content: Buffer.from(svg).toString("base64"),
               ...(sha ? { sha } : {})
             });
-
-## Solución de problemas
-
-Si el workflow falla con un error de permisos, comprueba que Read and write permissions esté habilitado.
-
-## Repositorio
-
-https://github.com/xyvenqorix/misworkflows
