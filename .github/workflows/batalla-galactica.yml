@@ -1,0 +1,150 @@
+name: Batalla galáctica
+
+on:
+  push:
+    branches: [main]
+    paths-ignore:
+      - assets/batalla-galactica.svg
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/github-script@v7
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          script: |
+            const stars = Array.from({ length: 110 }, (_, i) => {
+              const x = (i * 83) % 960;
+              const y = (i * 47) % 320;
+              const r = i % 8 === 0 ? 2 : 1;
+              return `<circle cx="${x}" cy="${y}" r="${r}" />`;
+            }).join("");
+
+            const enemies = [
+              [570, 80, "#e65e88"],
+              [760, 120, "#b56ce5"],
+              [650, 220, "#e65e88"],
+              [850, 250, "#b56ce5"]
+            ].map(([x, y, color], i) => `
+              <g transform="translate(${x} ${y})">
+                <animateTransform attributeName="transform" type="translate"
+                  values="${x} ${y};${x - 25} ${y + 20};${x} ${y}"
+                  dur="${3 + i}s" repeatCount="indefinite"/>
+                <path d="M0 25 L-28 -16 L0 -7 L28 -16 Z"
+                  fill="${color}" stroke="#ffd1e3" stroke-width="3"/>
+                <rect x="-8" y="-4" width="16" height="10" rx="4" fill="#241438"/>
+              </g>
+            `).join("");
+
+            const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="960" height="320" viewBox="0 0 960 320">
+              <defs>
+                <radialGradient id="space">
+                  <stop offset="0%" stop-color="#1a3569"/>
+                  <stop offset="55%" stop-color="#0a1635"/>
+                  <stop offset="100%" stop-color="#030714"/>
+                </radialGradient>
+                <filter id="glow">
+                  <feGaussianBlur stdDeviation="4" result="blur"/>
+                  <feMerge>
+                    <feMergeNode in="blur"/>
+                    <feMergeNode in="SourceGraphic"/>
+                  </feMerge>
+                </filter>
+              </defs>
+
+              <rect width="960" height="320" rx="24" fill="url(#space)"/>
+
+              <g fill="#d9eaff" opacity=".8">
+                ${stars}
+                <animateTransform attributeName="transform" type="translate"
+                  values="0 0;-55 0;0 0" dur="5s" repeatCount="indefinite"/>
+              </g>
+
+              <ellipse cx="810" cy="40" rx="120" ry="45" fill="#8b5cf6" opacity=".12"/>
+              <ellipse cx="120" cy="285" rx="190" ry="58" fill="#38bdf8" opacity=".10"/>
+
+              ${enemies}
+
+              <g filter="url(#glow)">
+                <path d="M440 170 H710" stroke="#8af5ff" stroke-width="5"
+                  stroke-linecap="round" opacity="0">
+                  <animate attributeName="opacity"
+                    values="0;0;1;1;0;0"
+                    keyTimes="0;.12;.18;.35;.42;1"
+                    dur="2.8s" repeatCount="indefinite"/>
+                  <animate attributeName="d"
+                    values="M440 170 H455;M440 170 H735"
+                    dur="2.8s" repeatCount="indefinite"/>
+                </path>
+
+                <path d="M440 170 H650" stroke="#8af5ff" stroke-width="5"
+                  stroke-linecap="round" opacity="0">
+                  <animate attributeName="opacity"
+                    values="0;0;0;0;1;1;0"
+                    keyTimes="0;.42;.48;.52;.68;.75;1"
+                    dur="2.8s" repeatCount="indefinite"/>
+                  <animate attributeName="d"
+                    values="M440 170 H455;M440 170 H690"
+                    dur="2.8s" repeatCount="indefinite"/>
+                </path>
+              </g>
+
+              <g transform="translate(210 165)" filter="url(#glow)">
+                <animateTransform attributeName="transform" type="translate"
+                  values="210 165;235 150;210 165;225 178;210 165"
+                  dur="3s" repeatCount="indefinite"/>
+                <path d="M0 -42 L-45 38 L-17 28 L0 54 L17 28 L45 38 Z"
+                  fill="#55cbed" stroke="#d9fbff" stroke-width="4"/>
+                <path d="M0 -20 L-13 21 L0 34 L13 21 Z" fill="#173b67"/>
+                <circle cx="0" cy="6" r="10" fill="#e9feff"/>
+                <path d="M-18 35 L-38 58 L-10 45 Z" fill="#526ed0"/>
+                <path d="M18 35 L38 58 L10 45 Z" fill="#526ed0"/>
+                <path d="M-12 48 L0 72 L12 48" fill="#ffb44d">
+                  <animate attributeName="fill"
+                    values="#ffb44d;#fff0a3;#ffb44d"
+                    dur=".35s" repeatCount="indefinite"/>
+                </path>
+              </g>
+
+              <g transform="translate(730 110)" fill="none" stroke="#ffd45f" stroke-width="6" opacity="0" filter="url(#glow)">
+                <animate attributeName="opacity"
+                  values="0;0;0;1;0;0"
+                  keyTimes="0;.27;.34;.48;.61;1"
+                  dur="2.8s" repeatCount="indefinite"/>
+                <circle r="12">
+                  <animate attributeName="r"
+                    values="8;8;8;48;60;8"
+                    dur="2.8s" repeatCount="indefinite"/>
+                </circle>
+              </g>
+            </svg>`;
+
+            const path = "assets/batalla-galactica.svg";
+            let sha;
+
+            try {
+              const old = await github.rest.repos.getContent({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                path,
+                ref: "main"
+              });
+              sha = old.data.sha;
+            } catch (error) {
+              if (error.status !== 404) throw error;
+            }
+
+            await github.rest.repos.createOrUpdateFileContents({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              path,
+              branch: "main",
+              message: "Crear batalla galáctica",
+              content: Buffer.from(svg).toString("base64"),
+              ...(sha ? { sha } : {})
+            });
