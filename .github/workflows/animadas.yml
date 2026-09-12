@@ -1,0 +1,117 @@
+name: Naves animadas
+
+on:
+  push:
+    branches: [main]
+    paths-ignore:
+      - assets/naves-animadas.svg
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/github-script@v7
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          script: |
+            const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="720" height="250" viewBox="0 0 720 250">
+              <defs>
+                <filter id="glow">
+                  <feGaussianBlur stdDeviation="3" result="b"/>
+                  <feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge>
+                </filter>
+              </defs>
+
+              <!-- Estrellas -->
+              <g fill="#7d9fcf" opacity=".8">
+                <circle cx="55" cy="45" r="2"/><circle cx="130" cy="180" r="1.5"/>
+                <circle cx="220" cy="55" r="2"/><circle cx="305" cy="200" r="1"/>
+                <circle cx="430" cy="35" r="1.5"/><circle cx="560" cy="190" r="2"/>
+                <circle cx="670" cy="65" r="1"/><circle cx="650" cy="155" r="2"/>
+                <animateTransform attributeName="transform" type="translate"
+                  values="0 0;-35 0;0 0" dur="4s" repeatCount="indefinite"/>
+              </g>
+
+              <!-- Nave del jugador -->
+              <g filter="url(#glow)">
+                <animateTransform attributeName="transform" type="translate"
+                  values="0 0;0 8;0 0" dur="1.5s" repeatCount="indefinite"/>
+
+                <path d="M105 125 L45 165 L82 165 L105 192 L128 165 L165 165 Z"
+                  fill="#58c9e8" stroke="#b7f6ff" stroke-width="3"/>
+                <path d="M105 128 L92 160 L105 174 L118 160 Z" fill="#17395e"/>
+                <circle cx="105" cy="151" r="8" fill="#d9fbff"/>
+                <path d="M75 169 L48 185 L82 177 Z" fill="#5079d2"/>
+                <path d="M135 169 L162 185 L128 177 Z" fill="#5079d2"/>
+              </g>
+
+              <!-- Disparos -->
+              <g stroke="#73f5ff" stroke-width="5" stroke-linecap="round" filter="url(#glow)">
+                <path d="M162 151 L280 151" opacity="0">
+                  <animate attributeName="opacity" values="0;0;1;1;0" keyTimes="0;.18;.22;.44;.48" dur="3s" repeatCount="indefinite"/>
+                  <animate attributeName="d" values="M162 151 L180 151;M162 151 L350 151" dur="3s" repeatCount="indefinite"/>
+                </path>
+                <path d="M162 151 L280 151" opacity="0">
+                  <animate attributeName="opacity" values="0;0;0;0;1;1;0" keyTimes="0;.48;.52;.54;.76;.8;1" dur="3s" repeatCount="indefinite"/>
+                  <animate attributeName="d" values="M162 151 L180 151;M162 151 L350 151" dur="3s" repeatCount="indefinite"/>
+                </path>
+              </g>
+
+              <!-- Nave enemiga -->
+              <g>
+                <animate attributeName="opacity"
+                  values="1;1;1;0;0;1" keyTimes="0;.68;.7;.72;.92;1"
+                  dur="3s" repeatCount="indefinite"/>
+                <animateTransform attributeName="transform" type="translate"
+                  values="0 0;10 -3;0 0" dur=".35s" begin="2s" repeatCount="indefinite"/>
+
+                <path d="M505 128 L550 100 L595 128 L577 165 L523 165 Z"
+                  fill="#a56bdb" stroke="#f0c8ff" stroke-width="3"/>
+                <path d="M525 128 L550 113 L575 128" fill="#42215f"/>
+                <circle cx="550" cy="142" r="9" fill="#ffb9df"/>
+              </g>
+
+              <!-- Explosión -->
+              <g transform="translate(550 142)" fill="none" stroke="#ffd45f" stroke-width="6" opacity="0" filter="url(#glow)">
+                <animate attributeName="opacity"
+                  values="0;0;0;1;0;0" keyTimes="0;.66;.7;.76;.84;1"
+                  dur="3s" repeatCount="indefinite"/>
+                <animateTransform attributeName="transform" type="translate"
+                  values="550 142;550 142;550 142;550 142;550 142"
+                  dur="3s" repeatCount="indefinite"/>
+                <circle r="12">
+                  <animate attributeName="r" values="8;8;8;42;55;8" dur="3s" repeatCount="indefinite"/>
+                </circle>
+                <path d="M-35 0 H35 M0-35 V35 M-25-25 L25 25 M25-25 L-25 25"/>
+              </g>
+            </svg>`;
+
+            const path = "assets/naves-animadas.svg";
+            let sha;
+
+            try {
+              const old = await github.rest.repos.getContent({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                path,
+                ref: "main"
+              });
+              sha = old.data.sha;
+            } catch (error) {
+              if (error.status !== 404) throw error;
+            }
+
+            await github.rest.repos.createOrUpdateFileContents({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              path,
+              branch: "main",
+              message: "Crear animación de naves",
+              content: Buffer.from(svg).toString("base64"),
+              ...(sha ? { sha } : {})
+            });
