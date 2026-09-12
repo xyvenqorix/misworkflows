@@ -1,0 +1,84 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="960" height="320" viewBox="0 0 960 320">
+  <defs>
+    <linearGradient id="space" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#07162d"/>
+      <stop offset=".55" stop-color="#0b2945"/>
+      <stop offset="1" stop-color="#031019"/>
+    </linearGradient>
+    <filter id="glow" x="-50%" y="-50%" width="200%" height="200%">
+      <feGaussianBlur stdDeviation="4" result="b"/>
+      <feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge>
+    </filter>
+  </defs>
+
+  <rect width="960" height="320" rx="24" fill="url(#space)"/>
+
+  <g fill="#d9efff" opacity=".85">
+    <circle cx="70" cy="35" r="2"/><circle cx="175" cy="160" r="1"/>
+    <circle cx="290" cy="70" r="2"/><circle cx="420" cy="250" r="1"/>
+    <circle cx="570" cy="80" r="2"/><circle cx="700" cy="210" r="1"/>
+    <circle cx="830" cy="45" r="2"/><circle cx="920" cy="175" r="1"/>
+    <animateTransform attributeName="transform" type="translate"
+      values="0 -45;0 45;0 -45" dur="6s" repeatCount="indefinite"/>
+  </g>
+
+  <ellipse cx="135" cy="285" rx="210" ry="65" fill="#38bdf8" opacity=".09"/>
+  <ellipse cx="825" cy="45" rx="185" ry="58" fill="#5b45b8" opacity=".12"/>
+
+  <!-- Manzanas -->
+  <g filter="url(#glow)">
+    <g transform="translate(720 84)">
+      <animate attributeName="opacity" values="1;1;0;0;0;1"
+        keyTimes="0;.24;.31;.77;.91;1" dur="8s" repeatCount="indefinite"/>
+      <circle r="12" fill="#ef4444"/>
+      <circle cx="-4" cy="-4" r="3" fill="#ffe2e2"/>
+      <path d="M0 -11 Q8 -25 17 -19" fill="none" stroke="#79d879" stroke-width="5" stroke-linecap="round"/>
+    </g>
+
+    <g transform="translate(305 238)" opacity="0">
+      <animate attributeName="opacity" values="0;0;0;1;1;0"
+        keyTimes="0;.20;.35;.41;.77;.85" dur="8s" repeatCount="indefinite"/>
+      <circle r="12" fill="#ef4444"/>
+      <circle cx="-4" cy="-4" r="3" fill="#ffe2e2"/>
+      <path d="M0 -11 Q8 -25 17 -19" fill="none" stroke="#79d879" stroke-width="5" stroke-linecap="round"/>
+    </g>
+  </g>
+
+  <!-- Serpiente verde que recorre la pantalla -->
+  <g filter="url(#glow)">
+    <animateTransform attributeName="transform" type="translate"
+      values="0 -175;0 175;0 -175" dur="8s" repeatCount="indefinite"/>
+
+    <path d="M300 455 C170 390 180 280 320 275
+      C470 270 500 165 385 130
+      C275 96 275 15 410 -10
+      C560 -38 710 18 720 84"
+      fill="none" stroke="#135c3d" stroke-width="38" stroke-linecap="round"/>
+
+    <path d="M300 455 C170 390 180 280 320 275
+      C470 270 500 165 385 130
+      C275 96 275 15 410 -10
+      C560 -38 710 18 720 84"
+      fill="none" stroke="#35a965" stroke-width="28"
+      stroke-linecap="round" stroke-dasharray="5 8"/>
+
+    <g transform="translate(720 84)">
+      <ellipse rx="29" ry="23" fill="#45c776" stroke="#b4ffd0" stroke-width="3"/>
+      <ellipse cx="11" cy="-7" rx="5" ry="7" fill="#102d21"/>
+      <circle cx="13" cy="-9" r="2" fill="#fff"/>
+      <path d="M10 10 Q19 17 28 10" fill="none" stroke="#153d2b" stroke-width="3" stroke-linecap="round"/>
+      <path d="M27 10 L42 15" stroke="#f06c88" stroke-width="3" stroke-linecap="round">
+        <animate attributeName="opacity" values="0;1;0" dur=".7s" repeatCount="indefinite"/>
+      </path>
+    </g>
+  </g>
+
+  <!-- Destello cuando come -->
+  <g transform="translate(720 84)" fill="none" stroke="#fff2a5" stroke-width="5" opacity="0" filter="url(#glow)">
+    <animate attributeName="opacity" values="0;0;1;0;0"
+      keyTimes="0;.21;.27;.36;1" dur="8s" repeatCount="indefinite"/>
+    <circle r="14">
+      <animate attributeName="r" values="8;8;45;60;8" dur="8s" repeatCount="indefinite"/>
+    </circle>
+  </g>
+</svg>
