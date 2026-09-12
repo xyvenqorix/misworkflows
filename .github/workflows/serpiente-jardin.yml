@@ -1,0 +1,136 @@
+name: Serpiente en el jardín
+
+on:
+  push:
+    branches: [main]
+    paths-ignore:
+      - assets/serpiente-jardin.svg
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Crear SVG animado
+        uses: actions/github-script@v7
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          script: |
+            const svg = String.raw`<svg xmlns="http://www.w3.org/2000/svg" width="960" height="330" viewBox="0 0 960 330">
+              <defs>
+                <linearGradient id="grass" x1="0" y1="0" x2="0" y2="1">
+                  <stop offset="0%" stop-color="#78b951"/>
+                  <stop offset="55%" stop-color="#4d943d"/>
+                  <stop offset="100%" stop-color="#276b32"/>
+                </linearGradient>
+
+                <filter id="shadow" x="-40%" y="-40%" width="180%" height="180%">
+                  <feGaussianBlur stdDeviation="4"/>
+                </filter>
+
+                <path id="route"
+                  d="M120 255 C220 80 390 95 400 190
+                     C408 275 560 275 575 175
+                     C590 70 750 75 820 160" />
+              </defs>
+
+              <rect width="960" height="330" rx="24" fill="url(#grass)"/>
+
+              <g stroke="#b5e58d" stroke-width="2" opacity=".35">
+                <path d="M20 300 l8 -18 M42 315 l-5 -17 M78 285 l9 -17 M120 320 l3 -20 M170 292 l-7 -16 M225 318 l7 -18 M280 295 l-4 -20 M340 318 l10 -16 M410 302 l-5 -18 M485 315 l8 -17 M550 290 l-4 -18 M625 320 l7 -19 M700 294 l-5 -17 M770 318 l9 -20 M850 290 l-4 -17 M920 315 l8 -18"/>
+                <path d="M35 90 l8 -18 M110 55 l-4 -15 M185 120 l8 -18 M270 60 l-4 -16 M345 110 l7 -18 M455 55 l-4 -16 M535 100 l8 -18 M650 58 l-4 -16 M745 110 l8 -18 M880 72 l-5 -17"/>
+              </g>
+
+              <g>
+                <g transform="translate(355 95)">
+                  <circle r="13" fill="#e84545"/>
+                  <circle cx="-4" cy="-4" r="3" fill="#ffd6d6"/>
+                  <path d="M0 -12 Q8 -27 19 -21" fill="none" stroke="#347b32" stroke-width="5" stroke-linecap="round"/>
+                </g>
+
+                <g transform="translate(575 175)">
+                  <circle r="13" fill="#e84545"/>
+                  <circle cx="-4" cy="-4" r="3" fill="#ffd6d6"/>
+                  <path d="M0 -12 Q8 -27 19 -21" fill="none" stroke="#347b32" stroke-width="5" stroke-linecap="round"/>
+                </g>
+
+                <g transform="translate(820 160)">
+                  <circle r="13" fill="#e84545"/>
+                  <circle cx="-4" cy="-4" r="3" fill="#ffd6d6"/>
+                  <path d="M0 -12 Q8 -27 19 -21" fill="none" stroke="#347b32" stroke-width="5" stroke-linecap="round"/>
+                </g>
+              </g>
+
+              <g opacity=".8">
+                <circle cx="85" cy="78" r="6" fill="#ffdf64"/>
+                <circle cx="88" cy="72" r="5" fill="#fff4a8"/>
+                <circle cx="160" cy="245" r="5" fill="#d58cff"/>
+                <circle cx="720" cy="250" r="6" fill="#ff8ead"/>
+                <circle cx="890" cy="85" r="5" fill="#ffe56d"/>
+              </g>
+
+              <g filter="url(#shadow)" opacity=".3">
+                <path d="M0 0 H95" stroke="#123c22" stroke-width="32" stroke-linecap="round">
+                  <animateMotion dur="10s" repeatCount="indefinite" rotate="auto">
+                    <mpath href="#route"/>
+                  </animateMotion>
+                </path>
+              </g>
+
+              <g>
+                <path d="M0 0 H95" stroke="#166b3c" stroke-width="31" stroke-linecap="round">
+                  <animateMotion dur="10s" repeatCount="indefinite" rotate="auto">
+                    <mpath href="#route"/>
+                  </animateMotion>
+                </path>
+
+                <path d="M0 0 H95" stroke="#3cae57" stroke-width="22" stroke-linecap="round" stroke-dasharray="5 7">
+                  <animateMotion dur="10s" repeatCount="indefinite" rotate="auto">
+                    <mpath href="#route"/>
+                  </animateMotion>
+                </path>
+
+                <g>
+                  <animateMotion dur="10s" repeatCount="indefinite" rotate="auto">
+                    <mpath href="#route"/>
+                  </animateMotion>
+
+                  <ellipse cx="104" cy="0" rx="27" ry="22" fill="#4fc968" stroke="#d2ff9f" stroke-width="3"/>
+                  <ellipse cx="112" cy="-8" rx="5" ry="7" fill="#153b25"/>
+                  <circle cx="114" cy="-10" r="2" fill="white"/>
+                  <path d="M113 10 Q123 17 133 9" fill="none" stroke="#173c26" stroke-width="3" stroke-linecap="round"/>
+                  <path d="M129 10 L145 15" stroke="#f26b79" stroke-width="3" stroke-linecap="round">
+                    <animate attributeName="opacity" values="0;1;0" dur=".65s" repeatCount="indefinite"/>
+                  </path>
+                </g>
+              </g>
+            </svg>`;
+
+            const path = "assets/serpiente-jardin.svg";
+            let sha;
+
+            try {
+              const old = await github.rest.repos.getContent({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                path,
+                ref: "main"
+              });
+              sha = old.data.sha;
+            } catch (error) {
+              if (error.status !== 404) throw error;
+            }
+
+            await github.rest.repos.createOrUpdateFileContents({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              path,
+              branch: "main",
+              message: "Crear serpiente en el jardin",
+              content: Buffer.from(svg).toString("base64"),
+              ...(sha ? { sha } : {})
+            });
